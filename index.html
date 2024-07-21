@@ -16,7 +16,7 @@
     const links = document.getElementById("urls-link");
 
     async function getLinks() {
-      const result = await axios.post('http://localhost:3000/urls-kwai', links.value.split(','));
+      const result = await axios.post('https://backend-teste-s0ug.onrender.com/urls-kwai', links.value.split(','));
 
       return result;
     }
