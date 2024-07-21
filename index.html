@@ -1,38 +1,44 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Force Download</title>
 </head>
 <body>
-    <input type="text" id="url-link" />
+ 
+    <textarea id="urls-link"></textarea>
   <a id="downloadLink">Download</a>
 
   <script>
-    const inputLink = document.getElementById("url-link");
-    document.getElementById('downloadLink').addEventListener('click', function(event) {
+     
+    const links = document.getElementById("urls-link");
+
+    async function getLinks() {
+      const result = await axios.post('http://localhost:3000/urls-kwai', links.value.split(','));
+
+      return result;
+    }
+    document.getElementById('downloadLink').addEventListener('click', async function(event) {
+    
       event.preventDefault();
-      console.log(inputLink.value)
-      const url = inputLink.value
+      const { data } = await getLinks();
 
-        fetch('https://www.kwai.com/@TatianeTorres/video/5236429098479111081')
-        .then(response => response.blob())
-        .then(blob => {
-            console.log(blob)
-        })
-
-      fetch(url)
+      for (const linkKwai of data) {
+        console.log(linkKwai);
+        fetch(linkKwai.videoSrc)
         .then(response => response.blob())
         .then(blob => {
           const link = document.createElement('a');
           link.href = window.URL.createObjectURL(blob);
-          link.setAttribute('download', 'video.mp4'); // Nome do arquivo que será baixado
+          link.setAttribute('download', `${linkKwai.name}.mp4`); // Nome do arquivo que será baixado
           document.body.appendChild(link);
           link.click();
           document.body.removeChild(link);
         })
         .catch(err => console.error('Erro ao baixar o vídeo:', err));
+      }      
     });
   </script>
 </body>
